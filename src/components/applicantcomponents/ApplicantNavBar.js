@@ -25,7 +25,7 @@ import { useRefresh } from "../common/RefreshContext"
 
 function ApplicantNavBar() {
   const location = useLocation();
-  const hideSidebarRoutes = ["/applicant-dymmy"];
+  const hideSidebarRoutes = ["/course"];
   const hiddenRoutes = ["/applicant-interview-prep", "/applicanthome"];
   const [isOpen, setIsOpen] = useState(
     window.innerWidth >= 1302 &&
@@ -722,6 +722,33 @@ function ApplicantNavBar() {
                     style={{ textTransform: "none" }}
                   >
                     Tech vibes
+                  </span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  onClick={hideMenu}
+                  to="/applicant-lmscourses-list"
+                  className={
+                    location.pathname === "/applicant-lmscourses-list"
+                      ? "tf-effect active"
+                      : ""
+                  }
+                >
+                  <span className="dash-icon blog-icon">
+                    <img
+                      src={shape7}
+                      alt="Dashboard Icon"
+                      width="24"
+                      height="24"
+                    />
+                  </span>
+
+                  <span
+                    className="dash-titles"
+                    style={{ textTransform: "none" }}
+                  >
+                    LMS Portal
                   </span>
                 </Link>
               </li>

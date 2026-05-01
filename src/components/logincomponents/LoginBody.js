@@ -13,6 +13,8 @@ import Backgroundimagemobile from "../../images/user/avatar/backgroundimage-mobi
 import Snackbar from "../common/Snackbar";
 import CryptoJS from "crypto-js";
 // import ZohoCRMService from "../zohoCrmComponent/zohoCrm";
+
+
 import { saveFcmTokenWeb } from "../../notifications/notificationWeb";
 import { generateToken } from "../../notifications/firebase";
 import {
@@ -114,10 +116,11 @@ function LoginBody({ handleLogin }) {
       userType1 = "unknown";
     }
     localStorage.setItem("userType", userType1);
-// Write userData so the navbar can display the logged-in user's email.
+    // Write userData so the navbar can display the logged-in user's email.
     // This overwrites any stale value from a previous session (fixes Edge stale-data bug).
     localStorage.setItem("userData", JSON.stringify({ identifier: email }));
     // Save FCM token (jobseekers only)
+
     if (userType1 === "jobseeker") {
       try {
         const generatedToken = await generateToken();
@@ -313,7 +316,7 @@ function LoginBody({ handleLogin }) {
           //   handlePostLoginRedirect();
           //   // navigate("/applicant-basic-details-form/3");
           // } else 
-            if (profileIdResponse.status === 200 && profileId === 0) {
+          if (profileIdResponse.status === 200 && profileId === 0) {
             console.log("checking ", jwtToken);
             localStorage.setItem("jwtToken", userData.data.jwt);
             setPageLoading(false);
@@ -332,113 +335,113 @@ function LoginBody({ handleLogin }) {
     },
   });
 
- const handleCandidateSubmit = async (e) => {
-  e.preventDefault();
+  const handleCandidateSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!isCandidateFormValid()) return;
+    if (!isCandidateFormValid()) return;
 
-  setPageLoading(true);
+    setPageLoading(true);
 
-  try {
-    const secretKey = "1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p";
-    const iv = CryptoJS.lib.WordArray.random(16);
+    try {
+      const secretKey = "1a2b3c4d5e6f7g8h9i0j1k2l3m4n5o6p";
+      const iv = CryptoJS.lib.WordArray.random(16);
 
-    const encryptedPassword = CryptoJS.AES.encrypt(
-      candidatePassword,
-      CryptoJS.enc.Utf8.parse(secretKey),
-      {
-        iv,
-        mode: CryptoJS.mode.CBC,
-        padding: CryptoJS.pad.Pkcs7,
-      }
-    ).toString();
+      const encryptedPassword = CryptoJS.AES.encrypt(
+        candidatePassword,
+        CryptoJS.enc.Utf8.parse(secretKey),
+        {
+          iv,
+          mode: CryptoJS.mode.CBC,
+          padding: CryptoJS.pad.Pkcs7,
+        }
+      ).toString();
 
-    const response = await apiClient.post("/applicant/applicantLogin", {
-      email: candidateEmail,
-      password: encryptedPassword,
-      iv: iv.toString(CryptoJS.enc.Base64),
-    });
-
-    // ✅ SUCCESS FLOW
-    if (response.status === 200) {
-      const userData = response.data;
-
-      await handlePostLogin({
-        userData,
+      const response = await apiClient.post("/applicant/applicantLogin", {
         email: candidateEmail,
-        name: userData.name ?? candidateEmail,
-        fromGoogle: false,
+        password: encryptedPassword,
+        iv: iv.toString(CryptoJS.enc.Base64),
       });
 
-      localStorage.setItem("jwtToken", userData.data.jwt);
+      // ✅ SUCCESS FLOW
+      if (response.status === 200) {
+        const userData = response.data;
 
-      let userType1 = "unknown";
-      if (userData.message.includes("ROLE_JOBAPPLICANT")) {
-        userType1 = "jobseeker";
+        await handlePostLogin({
+          userData,
+          email: candidateEmail,
+          name: userData.name ?? candidateEmail,
+          fromGoogle: false,
+        });
 
-        try {
-          const generatedToken = await generateToken();
-          await saveFcmTokenWeb(userData.id, userData.data.jwt, generatedToken);
-        } catch (err) {
-          console.error("FCM error:", err);
+        localStorage.setItem("jwtToken", userData.data.jwt);
+
+        let userType1 = "unknown";
+        if (userData.message.includes("ROLE_JOBAPPLICANT")) {
+          userType1 = "jobseeker";
+
+          try {
+            const generatedToken = await generateToken();
+            await saveFcmTokenWeb(userData.id, userData.data.jwt, generatedToken);
+          } catch (err) {
+            console.error("FCM error:", err);
+          }
+        } else if (userData.message.includes("ROLE_JOBRECRUITER")) {
+          userType1 = "employer";
         }
-      } else if (userData.message.includes("ROLE_JOBRECRUITER")) {
-        userType1 = "employer";
+
+        localStorage.setItem("userType", userType1);
+
+        setUser(userData);
+        setUserType(userType1);
+
+        const userId = userData.id;
+        const jwtToken = userData.data.jwt;
+
+        // Activity log
+        await apiClient.post("/api/activity/log", { userId, actionType: "Login" });
+
+        // Zoho
+        // try {
+        //   const zohoRes = await apiClient.get(`/zoho/searchlead/${candidateEmail}`);
+        //   const zohoUserId = zohoRes.data?.data?.[0]?.id;
+        //   if (zohoUserId) {
+        //     sessionStorage.setItem("zohoUserId", zohoUserId);
+        //   }
+        // } catch (e) {
+        //   console.log("Zoho fetch failed");
+        // }
+
+        // Profile check
+        const profileRes = await apiClient.get(
+          `/applicantprofile/${userId}/profileid`,
+        );
+
+        const profileId = profileRes.data;
+
+        if (profileRes.status === 200 && profileId === 0) {
+          navigate("/applicant-basic-details-form/1");
+        } else {
+          handlePostLoginRedirect();
+        }
       }
 
-      localStorage.setItem("userType", userType1);
+    } catch (error) {
+      console.error(error?.response?.data || error.message);
 
-      setUser(userData);
-      setUserType(userType1);
-
-      const userId = userData.id;
-      const jwtToken = userData.data.jwt;
-
-      // Activity log
-      await apiClient.post("/api/activity/log", { userId, actionType: "Login" });
-
-      // Zoho
-      // try {
-      //   const zohoRes = await apiClient.get(`/zoho/searchlead/${candidateEmail}`);
-      //   const zohoUserId = zohoRes.data?.data?.[0]?.id;
-      //   if (zohoUserId) {
-      //     sessionStorage.setItem("zohoUserId", zohoUserId);
-      //   }
-      // } catch (e) {
-      //   console.log("Zoho fetch failed");
-      // }
-
-      // Profile check
-      const profileRes = await apiClient.get(
-        `/applicantprofile/${userId}/profileid`,
-      );
-
-      const profileId = profileRes.data;
-
-      if (profileRes.status === 200 && profileId === 0) {
-        navigate("/applicant-basic-details-form/1");
+      // ❌ ERROR HANDLING ONLY
+      if (error?.response?.data === "Incorrect password") {
+        setErrorMessage("Incorrect password.");
+      } else if (
+        error?.response?.data === "No account found with this email address"
+      ) {
+        setErrorMessage("No account found with this email address.");
       } else {
-        handlePostLoginRedirect();
+        setErrorMessage("Login failed. Please check your credentials.");
       }
+    } finally {
+      setPageLoading(false);
     }
-
-  } catch (error) {
-    console.error(error?.response?.data || error.message);
-
-    // ❌ ERROR HANDLING ONLY
-    if (error?.response?.data === "Incorrect password") {
-      setErrorMessage("Incorrect password.");
-    } else if (
-      error?.response?.data === "No account found with this email address"
-    ) {
-      setErrorMessage("No account found with this email address.");
-    } else {
-      setErrorMessage("Login failed. Please check your credentials.");
-    }
-  } finally {
-    setPageLoading(false);
-  }
-};
+  };
 
   const isCandidateFormValid = () => {
     const emailError = validateEmail(candidateEmail);
@@ -472,7 +475,7 @@ function LoginBody({ handleLogin }) {
         response.data === "Email is already registered as a Recruiter." ||
         response.data === "Email is already registered as an Applicant." ||
         response.data ===
-          "Mobile number is already registered as a Recruiter." ||
+        "Mobile number is already registered as a Recruiter." ||
         response.data === "Mobile number is already registered as an Applicant."
       ) {
         setCandidateOTPSent(false);
