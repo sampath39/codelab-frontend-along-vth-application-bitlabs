@@ -1,5 +1,4 @@
-
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import "./applicantcourses.css";
 import python from "./assets/python.jfif";
 import htmlandcss from "./assets/html&css.jfif";
@@ -9,11 +8,17 @@ import react from "./assets/reactjs.jfif";
 import springboot from "./assets/springboot.jfif";
 
 import { useNavigate } from "react-router-dom";
+import ProgressAPIService from "../../../services/ProgressAPIService.js";
+import { useUserContext } from "../../common/UserProvider";
 
 const ApplicantCourses = () => {
   const [search, setSearch] = useState("");
   const [refresh, setRefresh] = useState(false);
+  const [coursesProgress, setCoursesProgress] = useState({});
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user } = useUserContext();
+  const applicantId = user?.id;
 
   const coursesData = [
     { id: 1, name: "Python", img: python },
@@ -27,26 +32,40 @@ const ApplicantCourses = () => {
   const coursesMap = {
     "html & css": 5,
     "python": 13,
-    java: 1,
-    sql: 1,
-    react: 1,
-    "spring boot": 1
   };
+
+  // Load progress from backend on component mount
+  useEffect(() => {
+    const loadCoursesProgress = async () => {
+      if (!applicantId) return;
+      
+      try {
+        setLoading(true);
+        // Get all courses progress for this applicant
+        const applicantCourses = await ProgressAPIService.getApplicantProgress(applicantId);
+        
+        // Convert to object with course names as keys for easy lookup
+        const progressMap = {};
+        applicantCourses.forEach(course => {
+          progressMap[course.courseName.toLowerCase()] = course.overallProgress;
+        });
+        
+        setCoursesProgress(progressMap);
+      } catch (error) {
+        console.error('Error loading courses progress:', error);
+        // Fallback to empty progress
+        setCoursesProgress({});
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCoursesProgress();
+  }, [applicantId, refresh]);
 
   const getCourseProgress = (courseName) => {
     const key = courseName.toLowerCase();
-    const topicsCount = coursesMap[key] || 1;
-
-    let total = 0;
-
-    for (let i = 0; i < topicsCount; i++) {
-      const val =
-        parseInt(localStorage.getItem(`progress_${key}_${i}`)) || 0;
-
-      total += val;
-    }
-
-    return Math.round(total / topicsCount);
+    return coursesProgress[key] || 0;
   };
 
   const filteredCourses = useMemo(() => {
@@ -117,10 +136,8 @@ const ApplicantCourses = () => {
                           {progress}% completed
                         </p>
 
-                        {/* Buttons row — side by side */}
+                        {/* Start / Continue Button */}
                         <div style={{ marginTop: "8px" }}>
-
-                          {/* Start / Continue */}
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
@@ -146,40 +163,6 @@ const ApplicantCourses = () => {
                           >
                             {parseInt(progress) > 0 ? "▶ Continue" : "▶ Start Course"}
                           </button>
-
-                          {/* Reset */}
-                          {/* <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-
-                              const key = course.name.toLowerCase();
-                              const topicsCount = coursesMap[key] || 1;
-
-                              for (let i = 0; i < topicsCount; i++) {
-                                localStorage.removeItem(`progress_${key}_${i}`);
-                                localStorage.removeItem(`scorm_${key}_${i}`);
-                              }
-                              localStorage.removeItem(`lastTopic_${key}`);
-
-                              setRefresh((prev) => !prev);
-                            }}
-                            style={{
-                              fontSize: "12px",
-                              background: "linear-gradient(90deg, #FBBB5C 0%, #E66A0E 100%)",
-                              color: "#fff",
-                              cursor: "pointer",
-                              border: "none",
-                              borderRadius: "4px",
-                              padding: "6px 10px",
-                              boxShadow: "0px 0px 15px #F7AA4B",
-                              height: "32px",
-                              minWidth: "80px",
-                              fontWeight: "600"
-                            }}
-                          >
-                            Reset
-                          </button> */}
-
                         </div>
                       </div>
                     </article>
