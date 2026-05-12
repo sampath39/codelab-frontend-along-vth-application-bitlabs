@@ -36,6 +36,8 @@ import ResumeTemplates from '../../components/applicantcomponents/ApplicantAtsRe
 import ResumePreview from '../../components/applicantcomponents/ApplicantAtsResume/ResumePreview';
 import ApplicantCourses from '../../components/applicantcomponents/bitLabsLMSPortal/ApplicantCourses';
 import CourseDetails from '../../components/applicantcomponents/bitLabsLMSPortal/CourseDetails';
+import CodeLab from '../../codelab/CodeLab';
+
 
 function ApplicantHomePage() {
   const [activeRoute, setActiveRoute] = useState('');
@@ -159,6 +161,12 @@ function ApplicantHomePage() {
          case '/applicant-lmscourses-list':
           setActiveRoute('lmscourses');
         break;
+        case '/codelab':
+          setActiveRoute('codelab');
+        break;
+        case '/course':
+          setActiveRoute('coursedetails');
+        break;
          default:
       // 👇 check if route starts with /blogs/ (for blog single page)
       if (pathname.startsWith('/blogs/')) {
@@ -167,6 +175,8 @@ function ApplicantHomePage() {
         setActiveRoute('feedback-form-fill');
       } else if (pathname.startsWith('/course/')) {
         setActiveRoute('coursedetails');
+      } else if (pathname.startsWith('/codelab/problem/')) {
+        setActiveRoute('codelab-problem');
       }
       else {
         setActiveRoute('');
@@ -216,6 +226,7 @@ function ApplicantHomePage() {
       {activeRoute === 'feedback-form-fill' && <FeedbackFormFill />}
       {activeRoute === 'lmscourses' && <ApplicantCourses />}
       {activeRoute === 'coursedetails' && <CourseDetails />}
+      {(activeRoute === 'codelab' || activeRoute === 'codelab-problem') && <CodeLab />}
       </div> 
   )
 }

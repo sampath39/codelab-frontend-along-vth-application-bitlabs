@@ -90,6 +90,7 @@ const ApplicantDashboard = () => {
   const [dashboardScore, setDashboardScore] = useState(0);
   const [cappedScore, setCappedScore] = useState(0);
   const [userLevel, setUserLevel] = useState("");
+  const [userRank, setUserRank] = useState(null);
   const [bronzeScore, setBronzeScore] = useState(200);
   const [silverScore, setSilverScore] = useState(300);
   const [goldScore, setGoldScore] = useState(500);
@@ -412,9 +413,9 @@ const allLoadingDone =
   }, [user?.id, TOUR_KEY]);
 
   useEffect(() => {
-    const idToUse = applicantId ?? profileData?.applicant?.id;
+    const idToUse = applicantId ?? profileData?.applicant?.id ?? user?.id;
     if (idToUse) fetchDashboardScore(idToUse);
-  }, [applicantId, profileData?.applicant?.id]);
+  }, [applicantId, profileData?.applicant?.id, user?.id]);
 
   const fetchDashboardScore = async (id) => {
     if (!id) return setDashboardScore(0);
@@ -432,6 +433,9 @@ const allLoadingDone =
       if (scoreRes && typeof scoreRes === "object") {
         parsedScore = scoreRes.total_score ?? scoreRes.totalScore ?? scoreRes.score ?? 0;
         level = scoreRes.level ?? "";
+        if (scoreRes.rank !== undefined || scoreRes.ranking !== undefined || scoreRes.rank_index !== undefined) {
+          setUserRank(scoreRes.rank ?? scoreRes.ranking ?? scoreRes.rank_index);
+        }
 
         // Update badge thresholds if available
         if (Array.isArray(scoreRes.badgeScores)) {
@@ -660,6 +664,12 @@ const allLoadingDone =
         setLeaderboardError(null);
         const { data } = await apiClient.get(`/applicant-scores/leaderboard?limit=3`);
         setLeaderboard(data || []);
+        
+        // Backup: Update user rank if they are in the top 3
+        if (data && Array.isArray(data)) {
+          const myEntry = data.find(e => String(e.applicantId) === String(user.id));
+          if (myEntry) setUserRank(data.indexOf(myEntry) + 1);
+        }
       } catch (err) {
         console.error('Failed to fetch leaderboard:', err);
         setLeaderboard([]);
@@ -678,6 +688,12 @@ const allLoadingDone =
       const { data } = await apiClient.get(`/applicant-scores/leaderboard?limit=10`);
       console.log("Leader Board ",data);
       setModalLeaderboard(data || []);
+      
+      // Backup: Update user rank if they are in the top 10
+      if (data && Array.isArray(data)) {
+        const myEntry = data.find(e => String(e.applicantId) === String(user.id));
+        if (myEntry) setUserRank(data.indexOf(myEntry) + 1);
+      }
     } catch (err) {
       console.error('Failed to fetch modal leaderboard:', err);
       setModalLeaderboard([]);
@@ -1034,8 +1050,15 @@ const allLoadingDone =
                     </div>
                   ) : (
                     <div className="leaderboard-card">
-                      <div className="leaderboard-top-section">
-                        <h4 className="leaderboard-title">Our Leaderboard</h4>
+                      <div className="leaderboard-top-section" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                        <div>
+                          <h4 className="leaderboard-title">Our Leaderboard</h4>
+                          {userRank !== null && (
+                            <div style={{ fontSize: '12px', color: '#EA7B20', fontWeight: 'bold', marginTop: '4px' }}>
+                              Your Global Rank: #{userRank}
+                            </div>
+                          )}
+                        </div>
                         <span className="leaderboard-explore" onClick={openLeaderboardModal}>Explore</span>
                       </div>
                       <div className="leaderboard-podium">
@@ -1457,8 +1480,16 @@ const allLoadingDone =
                         </span>
                       </div>
                       <div className="portfolio-score-details">
-                        <h3>score</h3>
-                        <p>{dashboardScore ?? 0}</p>
+                        <div>
+                          <h3>score</h3>
+                          <p>{dashboardScore ?? 0}</p>
+                        </div>
+                        {userRank !== null && (
+                          <div style={{ borderLeft: '1px solid #ddd', paddingLeft: '12px', marginLeft: '12px' }}>
+                            <h3 style={{ color: '#EA7B20' }}>rank</h3>
+                            <p style={{ color: '#EA7B20' }}>#{userRank}</p>
+                          </div>
+                        )}
                       </div>
 
                     </div>

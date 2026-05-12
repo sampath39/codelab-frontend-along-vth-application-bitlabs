@@ -4,6 +4,7 @@ import "./coursedetails.css";
 import WorkingScormPlayer from "./WorkingScormPlayer";
 import ProgressAPIService from "../../../services/ProgressAPIService.js";
 import { useUserContext } from "../../common/UserProvider";
+import CourseCodeLab from "../../../codelab/components/CourseCodeLab";
 
 // ─── Static course data (outside component so it never re-creates) ───────────
 // Course mapping to convert course names to actual course IDs
@@ -58,6 +59,7 @@ const CourseDetails = () => {
   const [courseProgressId, setCourseProgressId] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("video"); // "video" or "practice"
 
   // Ref keeps the current topic index reachable inside async callbacks/effects
   const playerRef = useRef(null);
@@ -294,32 +296,70 @@ const CourseDetails = () => {
                       </div>
                     );
                   })}
+
+                  {/* ─── Practice & Assignments Section ─── */}
+                  <div className="cd-practice-sidebar-section">
+                    <h4 className="cd-topics-heading">Practice & Assignments</h4>
+                    
+                    <div 
+                      className={`topic-block ${activeTab === "practice" ? "topic-active" : ""}`}
+                      onClick={() => setActiveTab("practice")}
+                    >
+                      <div className="topic-info">
+                        <strong>💻 Coding Practice</strong>
+                      </div>
+                      <p style={{ fontSize: "12px", color: "#666" }}>Practice course problems</p>
+                    </div>
+                  </div>
                 </div>
                 <div className="course-player" ref={playerRef}>
-                  {!isFullscreen && (
-                    <div className="immersive-overlay" onClick={toggleFullscreen}>
-                      <div className="overlay-msg">
-                        <span>⛶ Click anywhere to start Fullscreen Learning</span>
-                      </div>
+                  <div className="cd-tabs">
+                    <button 
+                      className={`cd-tab-btn ${activeTab === "video" ? "active" : ""}`}
+                      onClick={() => setActiveTab("video")}
+                    >
+                      📺 Video Lessons
+                    </button>
+                    <button 
+                      className={`cd-tab-btn ${activeTab === "practice" ? "active" : ""}`}
+                      onClick={() => setActiveTab("practice")}
+                    >
+                      💻 Practice (CodeLab)
+                    </button>
+                  </div>
+
+                  {activeTab === "video" ? (
+                    <>
+                      {!isFullscreen && (
+                        <div className="immersive-overlay" onClick={toggleFullscreen}>
+                          <div className="overlay-msg">
+                            <span>⛶ Click anywhere to start Fullscreen Learning</span>
+                          </div>
+                        </div>
+                      )}
+                      <WorkingScormPlayer
+                        courseId={`${courseName}_${selectedTopicIndex}`}
+                        onProgressUpdate={handleProgressUpdate}
+                      />
+                      <iframe
+                        key={`${courseName}_${selectedTopicIndex}`}
+                        src={selectedVideo}
+                        className="video-frame"
+                        title="Course Player"
+                        allowFullScreen
+                      />
+                      <button
+                        onClick={toggleFullscreen}
+                        className="fullscreen-btn"
+                      >
+                        {isFullscreen ? "✕ Exit Fullscreen" : "⛶ Fullscreen"}
+                      </button>
+                    </>
+                  ) : (
+                    <div className="cd-practice-area">
+                      <CourseCodeLab courseName={courseName} />
                     </div>
                   )}
-                  <WorkingScormPlayer
-                    courseId={`${courseName}_${selectedTopicIndex}`}
-                    onProgressUpdate={handleProgressUpdate}
-                  />
-                  <iframe
-                    key={`${courseName}_${selectedTopicIndex}`}
-                    src={selectedVideo}
-                    className="video-frame"
-                    title="Course Player"
-                    allowFullScreen
-                  />
-                  <button
-                    onClick={toggleFullscreen}
-                    className="fullscreen-btn"
-                  >
-                    {isFullscreen ? "✕ Exit Fullscreen" : "⛶ Fullscreen"}
-                  </button>
                 </div>
               </div>
             </div>

@@ -326,3 +326,46 @@
   opacity: 1;
   transform: translateY(0);
 }
+
+/* ── Tabs for CoursePlayer ──────────────────────────────── */
+.cd-tabs {
+  display: flex;
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+  padding: 0 15px;
+  gap: 10px;
+}
+
+.cd-tab-btn {
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.3s;
+}
+
+.cd-tab-btn:hover {
+  color: #D26B15;
+}
+
+.cd-tab-btn.active {
+  color: #D26B15;
+  border-bottom-color: #D26B15;
+}
+
+.cd-practice-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  background: #fdfdfd;
+}
+
+.cd-practice-sidebar-section {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}

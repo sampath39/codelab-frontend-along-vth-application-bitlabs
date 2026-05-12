@@ -752,6 +752,32 @@ function ApplicantNavBar() {
                   </span>
                 </Link>
               </li>
+              <li>
+                <Link
+                  onClick={hideMenu}
+                  to="/codelab"
+                  className={
+                    location.pathname.startsWith("/codelab")
+                      ? "tf-effect active"
+                      : ""
+                  }
+                >
+                  <span className="dash-icon">
+                    <img
+                      src={shape6}
+                      alt="CodeLab Icon"
+                      width="24"
+                      height="24"
+                    />
+                  </span>
+                  <span
+                    className="dash-titles"
+                    style={{ textTransform: "none" }}
+                  >
+                    CodeLab
+                  </span>
+                </Link>
+              </li>
             </ul>
 
             {/* Logout Button */}

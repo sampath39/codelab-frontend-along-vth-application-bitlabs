@@ -39,6 +39,7 @@ import ProtectedRoute from './ProtectedRoute';
 import { ResumeProvider } from './components/applicantcomponents/ResumeContext';
 
 
+
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -175,9 +176,9 @@ function App() {
                       <Route path="/recruiter-mentor-rating" element={<RecruiterHomePage />} />
                       <Route path="/applicant-lmscourses-list" element={<ApplicantHomePage />} />
                       <Route path="/course/:courseName" element={<ApplicantHomePage />} />
-
-
+                      <Route path="/codelab/*" element={<ApplicantHomePage />} />
                     </>
+
                   ) : (
                     <Route path="*" element={<Navigate to="/candidate" />} />
                   )}

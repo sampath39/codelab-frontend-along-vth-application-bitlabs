@@ -440,17 +440,25 @@ color: #ea7b20;
   margin-top: 10px;
 }
 
+.portfolio-score-details {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
 .portfolio .profile-side-section h3 {
   font-size: 9px;
   font-weight: 500;
   color: #2C2C2C;
   text-align: right;
+  margin: 0;
 }
 
 .portfolio .profile-side-section p {
   font-size: 29px;
   font-weight: bold;
   color: #EA7B20;
+  margin: 0;
 }
 
 .profile-extra-details {
