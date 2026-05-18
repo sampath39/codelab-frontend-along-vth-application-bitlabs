@@ -656,19 +656,25 @@ const allLoadingDone =
     fetchTechBuzz();
   }, [user.id]);
 
-   // Fetch leaderboard top-3
+   // Fetch leaderboard top-10 for display, full list for real rank
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
         setLeaderboardLoading(true);
         setLeaderboardError(null);
-        const { data } = await apiClient.get(`/applicant-scores/leaderboard?limit=3`);
-        setLeaderboard(data || []);
-        
-        // Backup: Update user rank if they are in the top 3
-        if (data && Array.isArray(data)) {
-          const myEntry = data.find(e => String(e.applicantId) === String(user.id));
-          if (myEntry) setUserRank(data.indexOf(myEntry) + 1);
+
+        // Fetch top 10 for display
+        const { data: top10 } = await apiClient.get(`/applicant-scores/leaderboard?limit=10`);
+        setLeaderboard(top10 || []);
+
+        // Fetch full list to compute real rank
+        const { data: fullList } = await apiClient.get(`/applicant-scores/leaderboard?limit=10000`);
+        if (fullList && Array.isArray(fullList)) {
+          const myEntry = fullList.find(e => String(e.applicantId) === String(user.id));
+          if (myEntry) {
+            const realRank = fullList.indexOf(myEntry) + 1;
+            setUserRank(realRank);
+          }
         }
       } catch (err) {
         console.error('Failed to fetch leaderboard:', err);
@@ -681,18 +687,24 @@ const allLoadingDone =
     fetchLeaderboard();
   }, []);
 
-  // Fetch modal leaderboard with 10 leaders
+  // Fetch modal leaderboard with 10 leaders (full list for rank)
   const fetchModalLeaderboard = async () => {
     try {
       setModalLoading(true);
-      const { data } = await apiClient.get(`/applicant-scores/leaderboard?limit=10`);
-      console.log("Leader Board ",data);
-      setModalLeaderboard(data || []);
-      
-      // Backup: Update user rank if they are in the top 10
-      if (data && Array.isArray(data)) {
-        const myEntry = data.find(e => String(e.applicantId) === String(user.id));
-        if (myEntry) setUserRank(data.indexOf(myEntry) + 1);
+
+      // Fetch top 10 for display in modal
+      const { data: top10 } = await apiClient.get(`/applicant-scores/leaderboard?limit=10`);
+      console.log("Leader Board ", top10);
+      setModalLeaderboard(top10 || []);
+
+      // Fetch full list to compute real rank if not already known
+      const { data: fullList } = await apiClient.get(`/applicant-scores/leaderboard?limit=10000`);
+      if (fullList && Array.isArray(fullList)) {
+        const myEntry = fullList.find(e => String(e.applicantId) === String(user.id));
+        if (myEntry) {
+          const realRank = fullList.indexOf(myEntry) + 1;
+          setUserRank(realRank);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch modal leaderboard:', err);
@@ -1090,6 +1102,68 @@ const allLoadingDone =
                           });
                         })()}
                       </div>
+                      
+                      {/* Your Position Section (Space below top 3) */}
+                      {userRank !== null && (
+                        <div className="leaderboard-user-position" style={{ width: '100%', padding: '10px 0', background: 'transparent', borderBottom: 'none' }}>
+                          <h3 className="section-title" style={{ fontSize: '12px', marginBottom: '8px', color: '#fff' }}>Your Position</h3>
+                          <div className="user-rank-card" style={{ padding: '8px 12px' }}>
+                            <div className="user-rank-info">
+                              <span className="user-rank-number" style={{ fontSize: '14px', padding: '2px 8px' }}>
+                                {userRank}
+                                <span className="rank-suffix">
+                                  {userRank % 10 === 1 && userRank % 100 !== 11 ? 'st' : 
+                                   userRank % 10 === 2 && userRank % 100 !== 12 ? 'nd' : 
+                                   userRank % 10 === 3 && userRank % 100 !== 13 ? 'rd' : 'th'}
+                                </span>
+                              </span>
+                              <div className="user-avatar" style={{ width: '30px', height: '30px' }}>
+                                 <img 
+                                    src={imageMap[user.id] || defaultAvatarImg}
+                                    alt={card?.name || "You"}
+                                  />
+                              </div>
+                              <span className="user-name" style={{ fontSize: '13px' }}>{card?.name?.split(' ')[0] || "You"} (You)</span>
+                            </div>
+                            <span className="user-score" style={{ fontSize: '15px' }}>{dashboardScore}</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* List Section for Top 10 */}
+                      {leaderboard.length > 3 && (
+                        <div className="leaderboard-modal-list" style={{ width: '100%', marginTop: '5px', maxHeight: '150px', backgroundColor: 'white', borderRadius: '8px' }}>
+                          <div className="leaderboard-list-header" style={{ margin: '0', padding: '8px 12px', fontSize: '12px' }}>
+                            <span className="header-rank">Rank</span>
+                            <span className="header-name">Name</span>
+                            <span className="header-score">Score</span>
+                          </div>
+                          {leaderboard.slice(3).map((entry, index) => {
+                            const actualRank = index + 4;
+                            const suffix = actualRank % 10 === 1 && actualRank % 100 !== 11 ? 'st' : 
+                                           actualRank % 10 === 2 && actualRank % 100 !== 12 ? 'nd' : 
+                                           actualRank % 10 === 3 && actualRank % 100 !== 13 ? 'rd' : 'th';
+                            const isCurrentUser = String(entry.applicantId) === String(user.id);
+                            
+                            return (
+                              <div key={entry.applicantId} className={`leaderboard-list-item ${isCurrentUser ? 'current-user-highlight' : ''}`} style={{ margin: '0', padding: '8px 12px', borderRadius: '0' }}>
+                                <span className="list-rank" style={{ width: '20px', height: '20px', fontSize: '10px' }}>
+                                  <span className="rank-number">{actualRank}</span>
+                                  <span className="rank-suffix">{suffix}</span>
+                                </span>
+                                <div className="list-avatar" style={{ width: '28px', height: '28px', marginLeft: '10px' }}>
+                                  <img 
+                                    src={imageMap[entry.applicantId] || defaultAvatarImg}
+                                    alt={entry.name}
+                                  />
+                                </div>
+                                <span className="list-name" style={{ fontSize: '12px', marginLeft: '15px' }}>{entry.name?.split(' ')[0]} {isCurrentUser && "(You)"}</span>
+                                <span className="list-score" style={{ fontSize: '12px' }}>{entry.score}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   )}
                   </div> {/* end arena-leaderboard-col */}
@@ -1842,6 +1916,12 @@ const allLoadingDone =
         loading={modalLoading}
         imageMap={imageMap}
         defaultAvatarImg={defaultAvatarImg}
+        currentUser={{
+          id: user.id,
+          name: card.name || user.name || "You",
+          score: dashboardScore,
+          rank: userRank
+        }}
       />
 
     </div>

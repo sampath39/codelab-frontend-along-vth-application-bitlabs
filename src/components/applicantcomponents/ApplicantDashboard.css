@@ -1623,7 +1623,7 @@ color: #ea7b20;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .leaderboard-top-section {
@@ -1665,7 +1665,8 @@ color: #ea7b20;
   gap: 35px;
   width: 100%;
   flex: 1;
-  /* padding-top: 8px; */
+  flex-shrink: 0;
+  min-height: 120px;
 }
 
 .leaderboard-member {

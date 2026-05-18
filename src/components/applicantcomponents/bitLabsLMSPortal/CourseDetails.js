@@ -47,7 +47,6 @@ const COURSE_DATA = {
     { topic: "Java Basics", videos: [{ title: "Java Course", url: "https://bitlabs-app.s3.ap-south-1.amazonaws.com/Staging/ScromPackages/How+to+Set+Goals_web+2/story.html" }] },
   ],
 };
-
 const CourseDetails = () => {
   const { courseName } = useParams();
   const { user } = useUserContext();

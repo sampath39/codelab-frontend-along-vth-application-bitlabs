@@ -46,13 +46,14 @@ function ApplicantHomePage() {
   const navigate = useNavigate();
   const { user } = useUserContext();
   const { id } = useParams();
-  const userId = user.id;
+  const userId = user?.id;
   useEffect(() => {
     
     if (location.pathname === '/applicant-find-jobs' || location.pathname === '/applicanthome') {
       return; 
     }
     const checkUserProfile = async () => {
+      if (!userId) return;
       try {
         const profileIdResponse = await apiClient.get(`/applicantprofile/${userId}/profileid`);
         const profileId = profileIdResponse.data;
@@ -72,7 +73,10 @@ function ApplicantHomePage() {
 
 
   const updateActiveRoute = () => {
-    const pathname = location.pathname;
+    let pathname = location.pathname;
+    if (pathname.endsWith('/') && pathname.length > 1) {
+      pathname = pathname.slice(0, -1);
+    }
     switch (pathname) {
       case '/applicant-find-jobs':
         setActiveRoute('findjobs');
@@ -191,7 +195,7 @@ function ApplicantHomePage() {
   }, [location.pathname]);
   
   return (
-    <div  class="dashboard show"> 
+    <div className="dashboard show"> 
      <ApplicantNavBar />
      {activeRoute === 'findjobs' && (<ApplicantFindJobs setSelectedJobId={setSelectedJobId} /> )}
      {activeRoute === 'myjobs' && (<MyJobs setSelectedJobId={setSelectedJobId} /> )}
