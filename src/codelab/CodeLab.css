@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+/* Root container for the CodeLab module when inside the portal */
+.codelab-module-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh; /* Fill the screen */
+}
+
+.codelab-content {
+  margin-top: 65px !important; /* Align closely with navbar */
+  padding: 0px 20px 20px 20px !important; /* Reduced top padding to lift title */
+  height: calc(100% - 65px) !important;
+  display: flex;
+  flex-direction: column;
+}
+
+.codelab-app-container {
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+  height: 100%;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  overflow: hidden; /* Container itself doesn't scroll */
+}
+
+.codelab-main-content {
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto; /* Internal scrolling only */
+}
+
+/* Custom Scrollbar for CodeLab */
+.codelab-main-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.codelab-main-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.codelab-main-content::-webkit-scrollbar-thumb {
+  background: #f0642433;
+  border-radius: 10px;
+}
+
+.codelab-main-content::-webkit-scrollbar-thumb:hover {
+  background: #f0642466;
+}
+
+
+.glass-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent-primary);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius-md);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(255, 107, 0, 0.2);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 107, 0, 0.3);
+}
+
+.codelab-page-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  animation: codelab-fade-in 0.4s ease-out;
+}
+
+@keyframes codelab-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ql-breadcrumb-outer {
+  position: sticky;
+  top: -15px; /* Stick higher up */
+  z-index: 100;
+  font-size: 20px;
+  font-weight: 800;
+  color: #1a1a1a;
+  letter-spacing: 1.5px;
+  margin-top: -10px; /* Move it up */
+  margin-bottom: 15px;
+  padding-left: 5px;
+  text-transform: uppercase;
+  font-family: 'Poppins', sans-serif;
+  animation: codelab-fade-in 0.4s ease-out;
+}
