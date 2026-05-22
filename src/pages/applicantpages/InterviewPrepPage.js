@@ -8,12 +8,14 @@ import Snackbar from "../../components/common/Snackbar";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import "./InterviewPrepPage.css"
+import { useNavigate } from "react-router-dom";
 import botImage from '../../images/dashboard/mobilebanners/Bot.png';
 import toggleimg from "../../images/icons/toggle.svg";
-import analytics from "../../utils/analytics";
+
 
 function InterviewPrepPage() {
   const { user } = useUserContext();
+  const navigate = useNavigate();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -568,12 +570,12 @@ function InterviewPrepPage() {
     closeDeleteConfirm();
   };
 
+
   const handleKeyPress = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       const msg = input.trim();
       if (!msg) return;
-      analytics.track("ASK NEWTON", currentUser?.id);
       setInput("");
       sendMessage(msg);
     }
@@ -701,53 +703,49 @@ function InterviewPrepPage() {
 
 
   return (
+    <>
     <div className="border-style">
       <div className="blur-border-style"></div>
       <div className="dashboard__content ai-chat-prep" >
-        <div className="ai-perp">
-          <div className="ask-newton-header">
-            <div className="left-header">
-              <span
-                className="hide-chat-toggle"
-                onClick={toggleSidebar}
-                style={{
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "14px",
-                }}
-                aria-label={showSidebar ? "Hide Saved Chat" : "Show Saved Chat"}
-              >
-                <img
-                  src={toggleimg}
-                  alt="Toggle Sidebar"
-                  style={{
-                    width: "22px",
-                    height: "22px",
-                    transform: showSidebar ? "rotate(0deg)" : "rotate(180deg)",
-                    transition: "transform 0.3s ease",
-                  }}
-                />
-              </span>
+        <div className="ai-perp">    <div className="lms-assignments-banner" onClick={() => navigate('/applicant-lmscourses-list')} style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}>
+  <i className="fa fa-laptop" style={{ fontSize: "24px", color: "#5F6368" }}></i>
+  <div className="lms-assignments-title">LMS Assignments</div>
+</div>
+      <div className="left-header">
+        <span
+          className="hide-chat-toggle"
+          onClick={toggleSidebar}
+          style={{
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "14px",
+          }}
+          aria-label={showSidebar ? "Hide Saved Chat" : "Show Saved Chat"}
+        >
+          <img
+            src={toggleimg}
+            alt="Toggle Sidebar"
+            style={{
+              width: "22px",
+              height: "22px",
+              transform: showSidebar ? "rotate(0deg)" : "rotate(180deg)",
+              transition: "transform 0.3s ease",
+            }}
+          />
+        </span>
+      </div>
+      <div className="center">
+        <h2 className="lms-assignments-title">LMS Assignments</h2>
+        <p className="lms-assignments-subtitle">View and complete your course assignments</p>
+      </div>
+      <div className="ai-top-buttons">
+        {/* Additional buttons can be added here if needed */}
+      </div>
+    </div>
 
-            </div>
-            <div className="center">
-              <h2 className="ask-newton-text">Ask Newton!</h2>
-            </div>
-
-            <div className="ai-top-buttons">
-              <div className="clear-new-buttons">
-                <button
-                  className="ai-new-chat"
-                  onClick={startNewChat}
-                  style={{ textTransform: "none" }}
-                >
-                  New chat
-                </button>
-              </div>
-            </div>
-          </div>
+          
           {/* Sidebar */}
           <div className="interview-prep-dashboard-content">
             <aside
@@ -755,11 +753,10 @@ function InterviewPrepPage() {
                 }`}
             >
               <div className="interview-prep-sidebar-header">
-                <span>
-                  <img src={botImage} alt="Bot icon" />
-                </span>
-                <h2>Ask Newton!</h2>
-              </div>
+        <span>
+          <img src={botImage} alt="Bot icon" />
+        </span>
+      </div>
 
               <div className="ai-sidebar-saved-content">
                 <div
@@ -986,7 +983,7 @@ function InterviewPrepPage() {
                       setInput(v);
                       if (isCoolingDown) setQueuedMessage(v);
                     }}
-                    placeholder="Ask newton!"
+                    placeholder="Type your message..."
                     onKeyDown={handleKeyPress}
                     disabled={isLoading || isCoolingDown}
                     aria-label="Chat input"
@@ -994,7 +991,7 @@ function InterviewPrepPage() {
                   />
 
                   <span
-                  onClick={() => {analytics.track("ASK NEWTON", currentUser?.id);sendMessage(); setInput("");}}
+                  onClick={() => { sendMessage(); setInput(""); }}
                     aria-label="Send message"
                     style={{
                       cursor: input.trim() ? "pointer" : "default",
@@ -1030,8 +1027,8 @@ function InterviewPrepPage() {
 
 
 
-          </div>
-        </div>
+  
+        
         {snackbars.map((snackbar, index) => (
           <Snackbar
             key={index}
@@ -1141,6 +1138,8 @@ function InterviewPrepPage() {
       </div>
 
     </div>
+    </div>
+    </>
   );
 }
 

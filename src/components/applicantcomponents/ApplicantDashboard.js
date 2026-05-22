@@ -802,7 +802,7 @@ const allLoadingDone =
       id: "asknewton",
       selector: "#tour-ask-newton",
       placement: "top",
-      text: "🎯 Ask Newton — Your AI-powered learning companion. Ask anything — get help with skills, subjects, practicals, exams, projects, and more. Learn, practice, and solve problems effectively."
+      text: "🎯 LMS Assignments — View and complete your course assignments."
     },
     {
       id: "arena",
@@ -892,30 +892,23 @@ const allLoadingDone =
   </div>
 </div>) : (
                   <div className="display-flex robo-container" >
-                    <div className="card robo-card">
+                    <div className="card robo-card" onClick={() => navigate('/applicant-lmscourses-list')} style={{ cursor: 'pointer' }}>
                       <div className="container">
 
                         <div className="robo-img ">
                           <span>
-                            <a onClick={handleRedirect3}>
-                              <img
-                                src={botImage}
-                                alt="Bot icon"
-                                width="150px"
-                                height="250px"
-                              />
+                            <a>
+                              <i className="fa fa-laptop" style={{ fontSize: "150px", color: "#5F6368", padding: "50px 0" }}></i>
                             </a>
                           </span>
                         </div>
 
                         <div className="robo-card-text">
                           <p className="robo-card-para">
-                            Any topic. Anytime - <span onClick={handleRedirect3} style={{ fontSize: "24px", fontWeight: "1200", color: "#7E3601", cursor: "pointer" }} id="tour-ask-newton">Ask Newton!</span>
+                            <span style={{ fontSize: "24px", fontWeight: "1200", color: "#7E3601", cursor: "pointer" }}>LMS Assignments</span>
                           </p>
 
-                          <button
-                            onClick={handleRedirect3}
-                          >
+                          <button onClick={(e) => { e.stopPropagation(); navigate('/applicant-lmscourses-list'); }}>
                             Get started
                           </button>
 
