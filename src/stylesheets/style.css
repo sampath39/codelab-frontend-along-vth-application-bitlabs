@@ -3603,11 +3603,11 @@ flex-shrink: 0;
 }
 
 .tf-effect.active .dash-icon svg {
-  fill: #F46F16 !important;
+  fill: #929698 !important;
 }
 
 .tf-effect.active .dash-icon svg:hover {
-  fill: #F46F16 !important;
+  fill: #929698 !important;
 }
 .tf-effect {
   display: flex;

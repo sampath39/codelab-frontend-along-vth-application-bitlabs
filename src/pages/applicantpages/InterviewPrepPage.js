@@ -356,7 +356,6 @@ function InterviewPrepPage() {
           payload
         );
       }
-
       setQueuedMessage("");
       setCooldownRemaining(0);
       setIsCoolingDown(false);

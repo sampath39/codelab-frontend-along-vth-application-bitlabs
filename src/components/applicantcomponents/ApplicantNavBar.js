@@ -456,8 +456,8 @@ function ApplicantNavBar() {
         </header>
 
         {/* Updated Sidebar */}
-        <div className={`left-menu ${isOpen ? "open" : ""}`}>
-          <div id="sidebar-menu">
+        <div className={`left-menu ${isOpen ? "open" : ""}`} style={{ display: "flex", flexDirection: "column" }}>
+          <div id="sidebar-menu" style={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}>
             <ul className="downmenu list-unstyled" id="side-menu">
               {/* Dashboard */}
               <li id="tour-dashboard">
@@ -740,7 +740,7 @@ function ApplicantNavBar() {
           </div>
 
           {/* Logout Button */}
-          <div style={{ marginTop: "auto" }}>
+          <div style={{ marginTop: "auto", marginBottom: "20px" }}>
             <div
               onClick={() => setShowModal(true)}
               style={{
@@ -749,7 +749,7 @@ function ApplicantNavBar() {
                 cursor: "pointer",
                 borderRadius: "8px",
                 transition: "all 0.3s ease",
-                margin: "0 10px",
+                margin: "0 20px", /* Increased horizontal margin to center it */
                 gap: "15px",
                 padding: "8px 0"
               }}

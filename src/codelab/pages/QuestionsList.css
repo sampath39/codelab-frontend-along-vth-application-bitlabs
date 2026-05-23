@@ -230,6 +230,13 @@ h1.ql-page-title {
   border-color: #d9531e;
 }
 
+@media (max-width: 480px) {
+  .ql-solve-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
 .ql-error {
   background: rgba(239, 68, 68, 0.05);
   color: #dc2626;

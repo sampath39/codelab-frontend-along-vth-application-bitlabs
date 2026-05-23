@@ -798,6 +798,46 @@
   margin: 0 0 24px 0;
 }
 
+/* ─── Responsive Media Queries ─── */
+@media (max-width: 768px) {
+  .editor-layout {
+    flex-direction: column;
+    padding: 8px;
+    gap: 8px;
+  }
+  .left-panel {
+    max-width: 100%;
+    width: 100% !important;
+    flex: 1;
+  }
+  .right-panel {
+    width: 100% !important;
+    flex: 1;
+  }
+  .resize-handle {
+    display: none;
+  }
+  .console-header {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    padding: 8px 16px;
+    gap: 8px;
+  }
+  .console-actions-top {
+    width: 100%;
+    justify-content: flex-end;
+  }
+  .console-action-btn {
+    flex: 1;
+    text-align: center;
+  }
+  .ql-page-title {
+    font-size: 20px !important;
+  }
+}
+
+
 .wrong-modal-btn {
   background: linear-gradient(135deg, #f06424, #ff8a50);
   color: #fff;
